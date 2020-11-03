@@ -23,34 +23,41 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleInvalidParams(MethodArgumentNotValidException ex) {
+        int code = HttpStatus.BAD_REQUEST.value();
+
         BindingResult result = ex.getBindingResult();
 
         if (result.hasErrors()) {
             List<ObjectError> errors = result.getAllErrors();
             if (!errors.isEmpty()) {
                 FieldError fieldError = (FieldError) errors.get(0);
-                return new ErrorResponse(fieldError.getDefaultMessage());
+                return new ErrorResponse(code, fieldError.getDefaultMessage());
             }
         }
 
-        return new ErrorResponse("参数错误");
+        return new ErrorResponse(code, "参数错误");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public ErrorResponse handleInvalidParams(ConstraintViolationException ex) {
+        int code = HttpStatus.BAD_REQUEST.value();
+
         String message = ex.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)
                 .findFirst()
                 .orElse(ex.getMessage());
-        return new ErrorResponse(message);
+        return new ErrorResponse(code, message);
     }
 
     @ExceptionHandler(ErrorResponseException.class)
     public ResponseEntity<ErrorResponse> handleError(ErrorResponseException ex) {
+        int code = ex.getCode().value();
+        String message = ex.getMessage();
+
         return ResponseEntity
-                .status(ex.getCode())
-                .body(new ErrorResponse(ex.getMessage()));
+                .status(code)
+                .body(new ErrorResponse(code, message));
     }
 }

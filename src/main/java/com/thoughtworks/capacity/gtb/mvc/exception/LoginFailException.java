@@ -6,7 +6,7 @@ public class LoginFailException extends ErrorResponseException {
 
     @Override
     public HttpStatus getCode() {
-        return HttpStatus.BAD_REQUEST;
+        return HttpStatus.UNAUTHORIZED;
     }
 
     @Override
