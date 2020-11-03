@@ -5,14 +5,15 @@ import com.thoughtworks.capacity.gtb.mvc.exception.LoginFailException;
 import com.thoughtworks.capacity.gtb.mvc.exception.UserAlreadyExistsException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class UserService {
 
-    private final Map<String, UserDto> users = new HashMap<>(16);
-    private Integer nextUserId = 1;
+    private final Map<String, UserDto> users = new ConcurrentHashMap<>(16);
+    private final AtomicInteger nextUserId = new AtomicInteger(1);
 
     public void register(UserDto userDto) {
         String username = userDto.getUsername();
@@ -21,7 +22,7 @@ public class UserService {
             throw new UserAlreadyExistsException();
         }
 
-        userDto.setId(nextUserId++);
+        userDto.setId(nextUserId.getAndIncrement());
         users.put(username, userDto);
     }
 
