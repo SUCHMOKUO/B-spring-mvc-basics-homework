@@ -16,6 +16,8 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 public class UserDto {
 
+    private Integer id;
+
     @NotEmpty(message = "用户名不为空")
     @Length(min = 3, max = 10, message = "用户名不合法，长度必须在3到10之间")
     @Pattern(regexp = "^\\w+$", message = "用户名不合法，只能由字母、数字或下划线组成")
